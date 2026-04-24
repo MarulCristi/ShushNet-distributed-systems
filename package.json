@@ -1,0 +1,26 @@
+{
+  "name": "shushnet",
+  "version": "1.0.0",
+  "description": "ShushNet - Anonymous complaint escalation system",
+  "private": true,
+  "workspaces": [
+    "shushnet/broker",
+    "shushnet/apartment-client",
+    "shushnet/building-manager"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=shushnet/broker\" \"npm run dev --workspace=shushnet/apartment-client\" \"npm run dev --workspace=shushnet/building-manager\"",
+    "dev:broker": "npm run dev --workspace=shushnet/broker",
+    "dev:apt": "npm run dev --workspace=shushnet/apartment-client",
+    "dev:manager": "npm run dev --workspace=shushnet/building-manager",
+    "build": "npm run build --workspaces",
+    "install-all": "npm install --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1"
+  },
+  "dependencies": {
+    "glob": "^13.0.6",
+    "rimraf": "^6.1.3"
+  }
+}

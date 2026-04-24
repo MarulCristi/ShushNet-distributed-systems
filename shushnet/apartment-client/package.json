@@ -1,0 +1,22 @@
+{
+  "name": "shushnet-apt-client",
+  "version": "1.0.0",
+  "description": "Apartment Client - Node.js CLI for apt",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.5.4",
+    "axios": "^1.5.0",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "typescript": "^5.3.3",
+    "ts-node-dev": "^2.0.0",
+    "rimraf": "^5.0.5"
+  }
+}
