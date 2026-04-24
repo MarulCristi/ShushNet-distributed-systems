@@ -1,37 +1,37 @@
-# ShushNet — Distributed Complaint Escalation System
+# ShushNet - Distributed Complaint Escalation System
  
 ## Architecture Overview
  
 ShushNet uses a three-service architecture:
  
-**Broker** (Port 3000) — Central complaint router, strike tracker, Socket.IO real-time alert hub, and escalation trigger at 3 strikes.
+**Broker** (Port 3000) - Central complaint router, strike tracker, Socket.IO real-time alert hub, and escalation trigger at 3 strikes.
  
-**Building Manager** (Port 3001) — Manager CLI for tenant registration, escalation webhook receiver, and escalation log writer.
+**Building Manager** (Port 3001) - Manager CLI for tenant registration, escalation webhook receiver, and escalation log writer.
  
-**Apartment Client** (Multiple instances) — Tenant CLI for login and complaint filing, Socket.IO real-time alert receiver, and strike view command.
+**Apartment Client** (Multiple instances) - Tenant CLI for login and complaint filing, Socket.IO real-time alert receiver, and strike view command.
  
 ---
  
 ## Completed Features
  
-### ✅ Step 1 — Core Infrastructure
+### ✅ Step 1 - Core Infrastructure
 - Express.js 4 REST API
 - Socket.IO 4 real-time messaging
 - MongoDB 7 with Mongoose 8
 - TypeScript 5 with strict mode
-### ✅ Step 2 — REST Endpoints & Models
+### ✅ Step 2 - REST Endpoints & Models
 - `POST /manager/register-tenant`
 - `POST /tenant/login`
 - `POST /complaint`
 - `GET /strikes/:tenantId`
 - `DELETE /manager/tenant/:tenantId`
-### ✅ Step 3 — Real-Time Alerts & Role Separation
+### ✅ Step 3 - Real-Time Alerts & Role Separation
 - Managers register tenants via the building-manager CLI
 - Tenants log in via the apartment-client CLI
 - Socket.IO rooms scoped by `tenantId`
 - 6-flash red alert display (1.8 seconds)
 - Separate CLI interfaces per role
-### ✅ Step 4 — Strike Escalation Webhook
+### ✅ Step 4 - Strike Escalation Webhook
 - Broker detects the 3-strike threshold
 - `POST` escalation to building-manager `/escalate` endpoint
 - Escalation logged to `building-manager/logs/escalation.log`
@@ -62,22 +62,22 @@ ShushNet uses a three-service architecture:
 ## Database Schema
  
 **Apartments**
-- `apartmentId` — string (not unique; allows multiple tenants per apartment)
-- `managerName` — string
-- `tenantName` — string (lowercase, trimmed, unique)
-- `tenantId` — string (unique)
-- `createdAt` — Date
+- `apartmentId` - string (not unique; allows multiple tenants per apartment)
+- `managerName` - string
+- `tenantName` - string (lowercase, trimmed, unique)
+- `tenantId` - string (unique)
+- `createdAt` - Date
 **Complaints**
-- `tenantId` — target tenant
-- `apartmentId` — string
-- `content` — string
-- `timestamp` — Date
+- `tenantId` - target tenant
+- `apartmentId` - string
+- `content` - string
+- `timestamp` - Date
 **Strikes**
-- `tenantId` — unique
-- `apartmentId` — string
-- `count` — incremented with each complaint
-- `lastStrikeTime` — Date
-- `expiresAt` — TTL index for nightly reset at midnight
+- `tenantId` - unique
+- `apartmentId` - string
+- `count` - incremented with each complaint
+- `lastStrikeTime` - Date
+- `expiresAt` - TTL index for nightly reset at midnight
 ---
  
 ## Quick Start
@@ -168,12 +168,12 @@ cd shushnet && node cleanup.js
  
 ## Roadmap
  
-### Step 5 — Enhanced UI & Formatting
+### Step 5 - Enhanced UI & Formatting
 - Color-coded message types
 - Complaint history in tenant view
 - Improved multi-apartment display formatting
 - Escalation alert in building-manager console
-### Step 6 — Report Generation
+### Step 6 - Report Generation
 - Daily summary reports
 - Exportable escalation history
 - Per-apartment complaint statistics
@@ -188,11 +188,11 @@ $process = Get-NetTCPConnection -LocalPort 3000 -State Listen | Select-Object -F
 Stop-Process -Id $process.OwningProcess
 ```
  
-**MongoDB connection failed** — Verify MongoDB is running (`mongosh`), the `shush-net` database exists, and the connection string in `.env` files is correct.
+**MongoDB connection failed** - Verify MongoDB is running (`mongosh`), the `shush-net` database exists, and the connection string in `.env` files is correct.
  
-**Socket.IO not connecting** — Restart the broker service and verify ports 3000 and 3001 are accessible.
+**Socket.IO not connecting** - Restart the broker service and verify ports 3000 and 3001 are accessible.
  
-**Tenants not receiving alerts** — The tenant must be logged in and Socket.IO connected. Check broker logs for `No clients listening`. Alerts are delivered on next login if the tenant is offline.
+**Tenants not receiving alerts** - The tenant must be logged in and Socket.IO connected. Check broker logs for `No clients listening`. Alerts are delivered on next login if the tenant is offline.
  
 ---
  
