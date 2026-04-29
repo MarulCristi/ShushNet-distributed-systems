@@ -1,35 +1,35 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IApartment extends Document {
-  apartmentId: string;
+  apartmentId: number;
   managerName: string;
-  tenantName: string;
   tenantId: string;
+  residentName?: string;
   createdAt: Date;
 }
 
 const apartmentSchema = new Schema<IApartment>(
   {
     apartmentId: {
-      type: String,
+      type: Number,
       required: true,
+      unique: true,
       index: true,
     },
     managerName: {
       type: String,
       required: true,
     },
-    tenantName: {
-      type: String,
-      required: true,
-      lowercase: true,
-      trim: true,
-    },
     tenantId: {
       type: String,
       required: true,
       unique: true,
       index: true,
+    },
+    residentName: {
+      type: String,
+      required: false,
+      trim: true,
     },
     createdAt: {
       type: Date,

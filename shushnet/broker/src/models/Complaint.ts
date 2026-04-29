@@ -1,21 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IComplaint extends Document {
-  tenantId: string;
-  apartmentId: string;
+  apartmentId: number;
   content: string;
   timestamp: Date;
 }
 
 const complaintSchema = new Schema<IComplaint>(
   {
-    tenantId: {
-      type: String,
-      required: true,
-      index: true,
-    },
     apartmentId: {
-      type: String,
+      type: Number,
       required: true,
       index: true,
     },
