@@ -237,7 +237,9 @@ const fileComplaint = async (targetApartmentId: number, content: string) => {
 
 const viewStrikes = async (targetApartmentId: number) => {
   try {
-    const response = await api.get<StrikesResponse>(`/strikes/${targetApartmentId}`);
+    const response = await api.get<StrikesResponse>('/complaints/summary', {
+      params: { apartmentId: targetApartmentId },
+    });
     const complaintList = response.data.complaints || [];
 
     console.log(`Strikes for apartment number ${targetApartmentId}: ${response.data.strikeCount}`);

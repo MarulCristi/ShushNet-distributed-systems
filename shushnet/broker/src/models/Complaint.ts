@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IComplaint extends Document {
   apartmentId: number;
+  authorApartmentId?: number;
   content: string;
   timestamp: Date;
 }
@@ -11,6 +12,11 @@ const complaintSchema = new Schema<IComplaint>(
     apartmentId: {
       type: Number,
       required: true,
+      index: true,
+    },
+    authorApartmentId: {
+      type: Number,
+      required: false,
       index: true,
     },
     content: {

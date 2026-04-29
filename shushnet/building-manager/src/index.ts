@@ -255,7 +255,7 @@ const deleteApartment = async (apartmentId: number) => {
 
 const viewAllComplaints = async () => {
   try {
-    const response = await api.get<AllStrikesResponse>('/strikes');
+    const response = await api.get<AllStrikesResponse>('/complaints/summary');
     const apartments = response.data.apartments || [];
 
     if (apartments.length === 0) {
@@ -294,7 +294,9 @@ const viewAllComplaints = async () => {
 
 const viewApartmentComplaints = async (apartmentId: number) => {
   try {
-    const response = await api.get<SingleApartmentStrikesResponse>(`/strikes/${apartmentId}`);
+    const response = await api.get<SingleApartmentStrikesResponse>('/complaints/summary', {
+      params: { apartmentId },
+    });
     const residentSuffix = response.data.residentName
       ? ` (Resident: ${response.data.residentName})`
       : '';

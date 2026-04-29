@@ -13,6 +13,7 @@ export interface TenantLoginPayload {
 // Complaint Payload
 export interface ComplaintPayload {
   apartmentId: number;
+  authorApartmentId?: number;
   content: string;
 }
 
@@ -48,9 +49,12 @@ export const validateTenantLogin = (data: any): data is TenantLoginPayload => {
 
 export const validateComplaint = (data: any): data is ComplaintPayload => {
   const apartmentId = parseApartmentId(data.apartmentId);
+  const authorApartmentId =
+    data.authorApartmentId === undefined ? null : parseApartmentId(data.authorApartmentId);
 
   return (
     apartmentId !== null &&
+    (data.authorApartmentId === undefined || authorApartmentId !== null) &&
     typeof data.content === 'string' &&
     data.content.trim().length > 0
   );

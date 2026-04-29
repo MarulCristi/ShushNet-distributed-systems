@@ -7,7 +7,6 @@
   --text-dim: #9bc1ad;
   --green-0: #0a7a53;
   --green-1: #13ab72;
-  --green-2: #40da9e;
   --danger: #f85a7a;
   --shadow-glow: 0 0 28px rgba(64, 218, 158, 0.35);
 }
@@ -34,8 +33,32 @@
   pointer-events: none;
 }
 
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(6px);
+  padding: 1rem;
+}
+
 .top-bar {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.top-bar-compact {
+  max-width: 740px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.top-bar-wide {
+  max-width: none;
+  width: 100%;
 }
 
 .top-bar h1 {
@@ -45,38 +68,77 @@
 }
 
 .top-bar p {
-  margin: 0.4rem 0 0;
-  color: var(--text-dim);
-}
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  box-shadow: var(--shadow-glow);
-  backdrop-filter: blur(6px);
-}
-
-.panel-header h2 {
-  margin: 0;
-  font-size: 1.15rem;
-}
-
-.panel-header p {
   margin: 0.35rem 0 0;
   color: var(--text-dim);
-  font-size: 0.95rem;
 }
 
-.role-switch {
-  padding: 1rem;
-  margin-bottom: 1rem;
+.stepline {
+  font-size: 0.9rem;
+}
+
+.profile-area {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: end;
+}
+
+.profile-chip {
+  width: 230px;
+  border: 1px solid rgba(105, 196, 151, 0.45);
+  background: rgba(6, 16, 24, 0.8);
+  border-radius: 12px;
+  padding: 0.55rem 0.8rem;
+  display: grid;
+  gap: 0.2rem;
+  box-shadow: 0 0 12px rgba(64, 218, 158, 0.25);
+}
+
+.profile-chip.muted {
+  opacity: 0.8;
+}
+
+.profile-role {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #97d9b9;
+}
+
+.profile-name {
+  font-size: 0.95rem;
+  color: #eafff4;
+}
+
+.step-card {
+  max-width: 740px;
+}
+
+.choose-role-card {
+  margin: 1.25rem auto 0;
+}
+
+.choose-role-card .role-buttons {
+  justify-content: center;
+}
+
+.sign-in-card {
+  margin: 1.25rem auto 0;
+}
+
+.step-card h2 {
+  margin: 0;
+}
+
+.step-card p {
+  margin: 0.45rem 0 0;
+  color: var(--text-dim);
 }
 
 .role-buttons {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
 button {
@@ -100,12 +162,26 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.role-buttons button {
-  min-width: 170px;
+.logout-button {
+  width: 230px;
+  background: linear-gradient(145deg, #8f1534, #d7385f);
+  color: #ffe5ec;
+  border: 1px solid rgba(255, 122, 149, 0.65);
 }
 
-.role-buttons .active {
-  outline: 2px solid rgba(64, 218, 158, 0.8);
+.logout-button:hover {
+  box-shadow: 0 0 16px rgba(215, 56, 95, 0.65);
+}
+
+.danger-button {
+  margin-top: 0.65rem;
+  background: linear-gradient(145deg, #8f1534, #d7385f);
+  color: #ffe5ec;
+  border: 1px solid rgba(255, 122, 149, 0.65);
+}
+
+.danger-button:hover {
+  box-shadow: 0 0 16px rgba(215, 56, 95, 0.65);
 }
 
 .banner {
@@ -113,6 +189,17 @@ button:disabled {
   padding: 0.75rem 1rem;
   border-radius: 10px;
   font-weight: 600;
+}
+
+.banner-card-width {
+  max-width: 740px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.banner-wide {
+  max-width: none;
+  width: 100%;
 }
 
 .banner.success {
@@ -133,11 +220,26 @@ button:disabled {
 .manager-layout,
 .tenant-layout {
   grid-template-columns: 1.3fr 1fr 1fr;
-  align-items: start;
+  align-items: stretch;
 }
 
-.panel {
-  padding: 1rem;
+.manager-layout > .panel,
+.tenant-layout > .panel {
+  min-height: 640px;
+  height: 640px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.panel-header p {
+  margin: 0.35rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.95rem;
 }
 
 .stack-form {
@@ -171,16 +273,45 @@ textarea:focus {
 }
 
 .graph-panel {
-  min-height: 420px;
+  min-height: 640px;
+  position: relative;
 }
 
 .network-graph {
   width: 100%;
-  height: 410px;
+  height: 100%;
   margin-top: 0.6rem;
   background: linear-gradient(180deg, rgba(7, 16, 26, 0.7), rgba(5, 14, 20, 0.3));
   border-radius: 12px;
   border: 1px solid rgba(75, 132, 101, 0.3);
+  flex: 1;
+  min-height: 0;
+}
+
+.graph-background {
+  fill: transparent;
+  cursor: grab;
+}
+
+.graph-background:active {
+  cursor: grabbing;
+}
+
+.graph-zoom-controls {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.graph-zoom-controls button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  border-radius: 10px;
 }
 
 .graph-edge {
@@ -202,7 +333,7 @@ textarea:focus {
 }
 
 .graph-apartment {
-  cursor: pointer;
+  cursor: move;
 }
 
 .graph-apartment.selected .apartment-node {
@@ -235,6 +366,10 @@ textarea:focus {
   margin: 0 0 0.5rem;
 }
 
+.selection-card .against-me-title {
+  margin-top: 0.9rem;
+}
+
 .selection-card p {
   margin: 0.35rem 0;
   color: var(--text-dim);
@@ -247,13 +382,19 @@ textarea:focus {
   margin: 1rem 0;
 }
 
+.complaints-panel .actions-row button {
+  flex: 1 1 220px;
+}
+
 .complaint-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   gap: 0.55rem;
-  max-height: 420px;
+  max-height: none;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -292,12 +433,13 @@ textarea:focus {
   font-style: italic;
 }
 
-.session-details p {
-  margin: 0.4rem 0;
+.complaint-list-compact {
+  margin-top: 0.7rem;
+  max-height: 220px;
 }
 
-.role-hint {
-  margin-top: 1rem;
+.selection-card .complaint-list-compact li {
+  padding: 0.55rem;
 }
 
 .alert-overlay {
@@ -335,5 +477,25 @@ textarea:focus {
 
   .network-graph {
     height: 350px;
+    min-height: 350px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+  }
+
+  .profile-area {
+    justify-items: start;
+  }
+
+  .profile-chip,
+  .logout-button {
+    width: 100%;
+  }
+
+  .manager-layout > .panel,
+  .tenant-layout > .panel {
+    min-height: auto;
+    height: auto;
   }
 }
