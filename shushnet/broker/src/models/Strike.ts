@@ -1,8 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IStrike extends Document {
-  tenantId: string;
-  apartmentId: string;
+  apartmentId: number;
   count: number;
   lastStrikeTime: Date;
   expiresAt: Date; // TTL index
@@ -10,15 +9,10 @@ export interface IStrike extends Document {
 
 const strikeSchema = new Schema<IStrike>(
   {
-    tenantId: {
-      type: String,
+    apartmentId: {
+      type: Number,
       required: true,
       unique: true,
-      index: true,
-    },
-    apartmentId: {
-      type: String,
-      required: true,
       index: true,
     },
     count: {

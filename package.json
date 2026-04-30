@@ -6,13 +6,14 @@
   "workspaces": [
     "shushnet/broker",
     "shushnet/apartment-client",
-    "shushnet/building-manager"
+    "shushnet/building-manager",
+    "shushnet/web-app"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=shushnet/broker\" \"npm run dev --workspace=shushnet/apartment-client\" \"npm run dev --workspace=shushnet/building-manager\"",
+    "dev": "concurrently \"npm run dev --workspace=shushnet/broker\" \"npm run dev --workspace=shushnet/web-app\"",
+    "dev:legacy": "concurrently \"npm run dev --workspace=shushnet/broker\" \"npm run dev --workspace=shushnet/apartment-client\" \"npm run dev --workspace=shushnet/building-manager\"",
     "dev:broker": "npm run dev --workspace=shushnet/broker",
-    "dev:apt": "npm run dev --workspace=shushnet/apartment-client",
-    "dev:manager": "npm run dev --workspace=shushnet/building-manager",
+    "dev:web": "npm run dev --workspace=shushnet/web-app",
     "build": "npm run build --workspaces",
     "install-all": "npm install --workspaces"
   },

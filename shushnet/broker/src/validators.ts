@@ -1,43 +1,60 @@
 // Manager Registration Payload
-export interface RegisterTenantPayload {
-  apartmentId: string;
+export interface RegisterApartmentPayload {
+  apartmentId: number;
   managerName: string;
-  tenantName: string;
+  residentName?: string;
 }
 
 // Tenant Login Payload
 export interface TenantLoginPayload {
-  tenantName: string;
+  apartmentId: number;
 }
 
 // Complaint Payload
 export interface ComplaintPayload {
-  tenantId: string;
+  apartmentId: number;
+  authorApartmentId?: number;
   content: string;
 }
 
-export const validateRegisterTenant = (data: any): data is RegisterTenantPayload => {
+const parseApartmentId = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isInteger(value) && value > 0) {
+    return value;
+  }
+
+  if (typeof value === 'string' && /^\d+$/.test(value.trim())) {
+    return Number(value.trim());
+  }
+
+  return null;
+};
+
+export const validateRegisterApartment = (data: any): data is RegisterApartmentPayload => {
+  const apartmentId = parseApartmentId(data.apartmentId);
+  const residentNameIsValid =
+    data.residentName === undefined ||
+    (typeof data.residentName === 'string' && data.residentName.trim().length > 0);
+
   return (
-    typeof data.apartmentId === 'string' &&
-    data.apartmentId.trim().length > 0 &&
+    apartmentId !== null &&
     typeof data.managerName === 'string' &&
     data.managerName.trim().length > 0 &&
-    typeof data.tenantName === 'string' &&
-    data.tenantName.trim().length > 0
+    residentNameIsValid
   );
 };
 
 export const validateTenantLogin = (data: any): data is TenantLoginPayload => {
-  return (
-    typeof data.tenantName === 'string' &&
-    data.tenantName.trim().length > 0
-  );
+  return parseApartmentId(data.apartmentId) !== null;
 };
 
 export const validateComplaint = (data: any): data is ComplaintPayload => {
+  const apartmentId = parseApartmentId(data.apartmentId);
+  const authorApartmentId =
+    data.authorApartmentId === undefined ? null : parseApartmentId(data.authorApartmentId);
+
   return (
-    typeof data.tenantId === 'string' &&
-    data.tenantId.trim().length > 0 &&
+    apartmentId !== null &&
+    (data.authorApartmentId === undefined || authorApartmentId !== null) &&
     typeof data.content === 'string' &&
     data.content.trim().length > 0
   );
