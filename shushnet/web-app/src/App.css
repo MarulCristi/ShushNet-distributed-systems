@@ -341,6 +341,17 @@ textarea:focus {
   stroke-width: 3;
 }
 
+.graph-apartment.escalated .apartment-node {
+  fill: #5f0d20;
+  stroke: rgba(255, 120, 145, 0.95);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 10px rgba(255, 82, 120, 0.65));
+}
+
+.graph-apartment.escalated.selected .apartment-node {
+  fill: #7a112a;
+}
+
 .node-title {
   fill: #defff0;
   font-size: 0.75rem;
@@ -373,6 +384,11 @@ textarea:focus {
 .selection-card p {
   margin: 0.35rem 0;
   color: var(--text-dim);
+}
+
+.escalated-marker {
+  color: #ff9ab1;
+  font-weight: 700;
 }
 
 .actions-row {

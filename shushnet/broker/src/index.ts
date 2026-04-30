@@ -242,11 +242,11 @@ app.post('/complaint', async (req, res) => {
 
     console.log(`Complaint filed against apartment ${apt.apartmentId} (Strike: ${strikeCount})`);
 
-    if (strikeCount === 3) {
+    if (strikeCount >= 3) {
       try {
         await axios.post('http://localhost:3001/escalate', {
           apartmentId: apt.apartmentId,
-          strikeCount: 3,
+          strikeCount,
           tenantId: apt.tenantId,
           residentName: apt.residentName || null,
         });
@@ -263,6 +263,13 @@ app.post('/complaint', async (req, res) => {
       strikeCount,
       timestamp: complaint.timestamp,
       apartmentId: apt.apartmentId,
+    });
+    io.to('managers').emit('complaint_created', {
+      complaintId: complaint._id,
+      apartmentId: apt.apartmentId,
+      strikeCount,
+      timestamp: complaint.timestamp,
+      content: complaint.content,
     });
 
     if (roomSize > 0) {
@@ -432,10 +439,10 @@ app.get('/complaints', async (req, res) => {
 io.on('connection', (socket) => {
   console.log(`Socket.IO client connected: ${socket.id}`);
 
-  socket.on('join_room', (tenantId: string) => {
-    socket.join(tenantId);
-    const roomSize = io.sockets.adapter.rooms.get(tenantId)?.size || 1;
-    console.log(`Client ${socket.id} joined account room: ${tenantId} (size: ${roomSize})`);
+  socket.on('join_room', (roomName: string) => {
+    socket.join(roomName);
+    const roomSize = io.sockets.adapter.rooms.get(roomName)?.size || 1;
+    console.log(`Client ${socket.id} joined room: ${roomName} (size: ${roomSize})`);
   });
 
   socket.on('disconnect', () => {

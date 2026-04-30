@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FormEvent, WheelEvent } from 'react';
+import type { FormEvent } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
@@ -31,6 +31,14 @@ interface ComplaintAlertPayload {
   apartmentId?: number;
 }
 
+interface ManagerComplaintEventPayload {
+  complaintId: string;
+  apartmentId: number;
+  strikeCount: number;
+  content: string;
+  timestamp: string;
+}
+
 interface TenantSession {
   apartmentId: number;
   tenantId: string;
@@ -49,6 +57,7 @@ interface SignedProfile {
 
 const brokerUrl = import.meta.env.VITE_BROKER_URL || 'http://localhost:3000';
 const api = axios.create({ baseURL: brokerUrl });
+const ESCALATION_THRESHOLD = 3;
 
 const parseApartmentNumber = (value: string): number | null => {
   if (!/^\d+$/.test(value.trim())) {
@@ -234,25 +243,6 @@ const GraphView = ({
     });
   }, [apartments, nodePositions]);
 
-  const onWheel = (event: WheelEvent<SVGSVGElement>) => {
-    event.preventDefault();
-    const local = getLocalPoint(event.clientX, event.clientY);
-    if (!local) {
-      return;
-    }
-
-    const scaleFactor = event.deltaY < 0 ? 1.1 : 0.9;
-    const nextZoom = clamp(zoom * scaleFactor, 0.5, 2.5);
-    const worldX = (local.x - pan.x) / zoom;
-    const worldY = (local.y - pan.y) / zoom;
-
-    setZoom(nextZoom);
-    setPan({
-      x: local.x - worldX * nextZoom,
-      y: local.y - worldY * nextZoom,
-    });
-  };
-
   const onZoomIn = () => {
     setZoom((previous) => clamp(previous * 1.15, 0.5, 2.5));
   };
@@ -265,7 +255,7 @@ const GraphView = ({
     <section className="panel graph-panel">
       <header className="panel-header">
         <h2>Network Graph</h2>
-        <p>Drag nodes. Scroll to zoom. Drag empty space to pan.</p>
+        <p>Drag nodes. Use + / - buttons to zoom. Drag empty space to pan.</p>
       </header>
       <svg
         ref={svgRef}
@@ -273,7 +263,6 @@ const GraphView = ({
         viewBox="0 0 1000 620"
         role="img"
         aria-label="Building graph"
-        onWheel={onWheel}
       >
         <defs>
           <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
@@ -325,10 +314,11 @@ const GraphView = ({
 
           {nodes.map((node) => {
             const selected = selectedApartment === node.apartmentId;
+            const escalated = node.strikeCount >= ESCALATION_THRESHOLD;
             return (
               <g
                 key={`node-${node.apartmentId}`}
-                className={`graph-apartment ${selected ? 'selected' : ''}`}
+                className={`graph-apartment ${selected ? 'selected' : ''} ${escalated ? 'escalated' : ''}`}
                 transform={`translate(${node.x}, ${node.y})`}
                 onMouseDown={(event) => {
                   event.stopPropagation();
@@ -375,6 +365,8 @@ function App() {
   const [tenantNameInput, setTenantNameInput] = useState('');
   const [tenantSession, setTenantSession] = useState<TenantSession | null>(null);
   const tenantSocketRef = useRef<Socket | null>(null);
+  const managerSocketRef = useRef<Socket | null>(null);
+  const complaintFilterRef = useRef<number | null>(null);
 
   const [signedProfile, setSignedProfile] = useState<SignedProfile | null>(null);
 
@@ -435,6 +427,10 @@ function App() {
   };
 
   useEffect(() => {
+    complaintFilterRef.current = complaintFilterApartment;
+  }, [complaintFilterApartment]);
+
+  useEffect(() => {
     void refreshApartmentGraph();
     void fetchComplaints(undefined, { includeAuthors: role === 'manager' });
   }, []);
@@ -442,11 +438,16 @@ function App() {
   useEffect(() => {
     return () => {
       tenantSocketRef.current?.disconnect();
+      managerSocketRef.current?.disconnect();
     };
   }, []);
 
   useEffect(() => {
     if (viewStep !== 3) {
+      return;
+    }
+
+    if (role === 'manager') {
       return;
     }
 
@@ -485,6 +486,8 @@ function App() {
   const startOver = () => {
     tenantSocketRef.current?.disconnect();
     tenantSocketRef.current = null;
+    managerSocketRef.current?.disconnect();
+    managerSocketRef.current = null;
     setTenantSession(null);
     setSignedProfile(null);
     setRole(null);
@@ -512,6 +515,16 @@ function App() {
     setViewStep(3);
     setFeedback(`Signed in as manager ${managerName}.`);
     setComplaintFilterApartment(null);
+    managerSocketRef.current?.disconnect();
+    const socket = io(brokerUrl);
+    managerSocketRef.current = socket;
+    socket.on('connect', () => {
+      socket.emit('join_room', 'managers');
+    });
+    socket.on('complaint_created', (_event: ManagerComplaintEventPayload) => {
+      void refreshApartmentGraph();
+      void fetchComplaints(complaintFilterRef.current, { includeAuthors: true });
+    });
     void fetchComplaints(undefined, { includeAuthors: true });
   };
 
@@ -899,7 +912,12 @@ function App() {
               <h3>Selected Node</h3>
               {selectedApartmentData ? (
                 <>
-                  <p>Apartment #{selectedApartmentData.apartmentId}</p>
+                  <p>
+                    Apartment #{selectedApartmentData.apartmentId}{' '}
+                    {selectedApartmentData.strikeCount >= ESCALATION_THRESHOLD && (
+                      <span className="escalated-marker">[ESCALATED]</span>
+                    )}
+                  </p>
                   <p>Resident: {selectedApartmentData.residentName || 'Not set'}</p>
                   <p>Current strikes: {selectedApartmentData.strikeCount}</p>
                   <button type="button" className="danger-button" onClick={() => void handleEvictApartment()}>
